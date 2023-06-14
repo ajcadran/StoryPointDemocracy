@@ -15,4 +15,4 @@
 ### Web Server
 
 - Navigate to `./src/WebServer`
-- Run `node src/app.js`
+- Run `node src/server.js`

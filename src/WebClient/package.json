@@ -7,9 +7,11 @@
     "mui": "^0.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "require": "^2.4.20",
     "yarn": "^1.22.19"
   },
   "devDependencies": {
+    "@parcel/transformer-sass": "^2.8.3",
     "process": "^0.11.10"
   }
 }

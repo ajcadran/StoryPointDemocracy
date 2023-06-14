@@ -56,7 +56,7 @@ const UserStatusList = ({ users }) => {
     }
 
     return (
-        <Card sx={{ mt: 10, width: 'max-content' }}>
+        <Card sx={{ width: 'max-content' }}>
             <List dense>
                 <Typography sx={{ textAlign: 'center' }}>Users</Typography>
                 <Divider/>

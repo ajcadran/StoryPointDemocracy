@@ -1,10 +1,19 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import TopAppBar from './TopAppBar';
 import UserStatusList from './UserStatusList';
 import { Grid } from '@mui/material';
 import CardDisplay from './CardDisplay';
+import ServerConnectionManager from './ServerConnectionManager';
 
 const App = () => {
+
+	const [currentUser, setCurrentUser] = useState({ id: null, username: null, status: null });
+	const [chosenCard, setChosenCard] = useState(-1);
+	
+	function selectCard(id: number) {
+		console.log('Picked card:', id);
+		setChosenCard(id);
+	}
 
 	const users = [
 		{
@@ -51,21 +60,24 @@ const App = () => {
 		},
 	]
 
+	
+
 	return (
-		<div>
+		<>
 			<TopAppBar/>
-			<Grid container>
+			<Grid container spacing={2} sx={{ width: '50%', margin: 'auto' }}>
 				<Grid item>
 					<UserStatusList users={users} />
 				</Grid>
 				<Grid item>
-					<CardDisplay cards={cards}/>
+					<CardDisplay cards={cards} callback={selectCard}/>
 				</Grid>
 			</Grid>
-			
+			<ServerConnectionManager currentUser={currentUser} chosenCard={chosenCard} />
 			{/** Users List **/}
 			{/** Main Content **/}
-		</div>
+		</>
 	);
 }
+
 export default App;

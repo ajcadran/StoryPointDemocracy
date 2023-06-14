@@ -1,12 +1,15 @@
 import React from "react";
 import { Box, Card, Grid, Typography } from "@mui/material";
+import "./_common.scss";
 
-const CardDisplay = ({ cards }) => {
+//const styles = require("_common.scss");
 
-    const CardMap = () => {
+const CardDisplay = ({ cards, callback }) => {
+
+    const CardMap = ({ callback }) => {
         return cards.map((card) => (
             <Grid item key={card.id}>
-                <Card sx={{ padding: '50px' }}>
+                <Card className="card" sx={{ padding: '50px' }} onClick={() => callback(card.id)}>
                     <Typography sx={{ width: 'max-content', height: 'max-content', margin: 'auto', textAlign: 'center' }}>{card.value}</Typography>
                 </Card>
             </Grid>
@@ -15,7 +18,7 @@ const CardDisplay = ({ cards }) => {
 
     return (
         <Grid container spacing={2}>
-            <CardMap/>
+            <CardMap callback={callback}/>
         </Grid>
     );
 }
