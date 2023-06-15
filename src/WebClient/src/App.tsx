@@ -1,26 +1,33 @@
-import {useEffect, useState} from 'react';
+import { useState } from 'react';
 import { Grid, Button } from '@mui/material';
 import TopAppBar from './TopAppBar';
 import UserStatusList from './UserStatusList';
 import CardDisplay from './CardDisplay';
 import ServerConnectionManager from './ServerConnectionManager';
+import ResultsDisplay from "./ResultsDisplay";
 
 const App = () => {
 
-	const [currentUser, setCurrentUser] = useState({ id: null, username: "Unnamed", color: 'white', status: null });
-	const [selectedCard, setSelectedCard] = useState(-1);
+	const [currentUser, setCurrentUser] = useState({ id: null, username: "User", color: 'white', status: 'Selecting' });
+	const [selectedCard, setSelectedCard] = useState(null);
 
 	const [messageQueue, setMessageQueue] = useState([]);
 
 	const [users, setUsers] = useState({});
 	const [cards, setCards] = useState([]);
+	const [userCards, setUserCards] = useState(null);
 
 	function selectCard(id: number) {
-		setSelectedCard(id);
+		if (selectedCard === null) setSelectedCard(id);
 	}
 
 	const addMessage = (command, message) => {
-
+		let queue = [...messageQueue];
+		queue.push({
+			command: command,
+			data: message,
+		});
+		setMessageQueue(queue);
 	}
 
 	const setUsername = (event) => {
@@ -42,17 +49,18 @@ const App = () => {
 			<TopAppBar setColor={setColor} setUsername={setUsername} />
 			<Grid container spacing={2} sx={{ width: '75%', margin: 'auto' }}>
 				<Grid item>
-					<UserStatusList users={users} />
+					<UserStatusList users={users} userCards={userCards} cards={cards} />
 				</Grid>
 				<Grid item>
-					<CardDisplay cards={cards} callback={selectCard} />
+					{!userCards && <CardDisplay selectedCard={selectedCard} cards={cards} callback={selectCard} />}
+					{userCards && <ResultsDisplay cards={cards} userCards={userCards} />}
 				</Grid>
 				<Grid item>
-					<Button variant="contained">Show Results</Button>
-					<Button variant="contained">Reset Room</Button>
+					<Button variant="contained" onClick={() => addMessage('END_ROUND', {})}>Show Results</Button>
+					<Button variant="contained" onClick={() => addMessage('NEW_ROUND', {})}>Reset Room</Button>
 				</Grid>
 			</Grid>
-			<ServerConnectionManager currentUser={currentUser} selectedCard={selectedCard} setUsers={setUsers} setCards={setCards} />
+			<ServerConnectionManager messageQueue={messageQueue} currentUser={currentUser} selectedCard={selectedCard} setSelectedCard={setSelectedCard} setUsers={setUsers} setCards={setCards} setUserCards={setUserCards} />
 		</>
 	);
 }

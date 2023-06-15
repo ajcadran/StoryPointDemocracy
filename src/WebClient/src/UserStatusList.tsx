@@ -12,7 +12,13 @@ export enum UserStatusType {
     disconnected = "Disconnected",
 }
 
-const UserStatusList = ({ users }) => {
+const UserStatusList = ({ users, userCards, cards }) => {
+
+    const userChoice = (user) => {
+        // TODO: Improve handling for when no cards have been selected, but END_ROUND is chosen
+        if (cards !== null && userCards !== null && cards[userCards[user]] != undefined) return cards[userCards[user]].value;
+        else return null;
+    }
 
     const UserList = () => {
         if (!users) return null;
@@ -29,6 +35,7 @@ const UserStatusList = ({ users }) => {
                 </ListItemAvatar>
                 <ListItemText
                     primary={users[user].username}
+                    secondary={userChoice(user)}
                 />
             </ListItem>
         ));

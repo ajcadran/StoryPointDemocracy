@@ -1,12 +1,18 @@
 import {useEffect, useState} from "react";
 
-const ServerConnectionManager = ({ currentUser, selectedCard, setUsers, setCards }) => {
+const ServerConnectionManager = ({ messageQueue, currentUser, selectedCard, setSelectedCard, setUsers, setCards, setUserCards }) => {
 
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     newConnection();
   }, []);
+
+  useEffect(() => {
+    if (messageQueue.length <= 0) return;
+    const message = messageQueue.pop();
+    sendMessage(message.command, message.data);
+  }, [messageQueue]);
 
   useEffect(() => {
     if (!currentUser || !socket) return;
@@ -33,6 +39,12 @@ const ServerConnectionManager = ({ currentUser, selectedCard, setUsers, setCards
         case 'SET_ID':
           currentUser.id = receivedMessage.data;
           return;
+        case 'REVEAL':
+          setUserCards(receivedMessage.data);
+          return;
+        case 'NEW_ROUND':
+          setUserCards(null);
+          setSelectedCard(null);
       }
     }
   }, [socket]);

@@ -1,11 +1,19 @@
+//import Helper from "./Helper";
 const express = require('express');
 const WebSocket = require('ws');
+//const Helper = require('./Helper.js');
 
 const hostname = '127.0.0.1';
 const port = 3000;
 
 let clients = new Map();
 let users = new Map();
+let userCards = new Map();
+let roundState = "selecting"; // selecting, displaying
+
+// selecting
+// on receive show results: send message with all chosen cards
+// on receive reset round: set selecting
 
 let cards = [
 	{
@@ -51,40 +59,75 @@ const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (socket) => {
 	// TODO: Update status to selecting if username existed before
-	const clientID = generateClientId();
+	const clientID = generateClientID();
 	clients.set(clientID, socket);
 
-	console.log(`Client Connected: ${clientID}`)
+	console.log(`Client Connected: ${clientID}`);
 
 	sendMessage(socket, 'SET_ID', clientID);
 	sendMessage(socket, 'UPDATE_CARDS', cards);
-	//sendMessage(socket, 'UPDATE_USERS', Object.fromEntries(users.entries()));
+	//sendMessage(socket, 'UPDATE_USERS', mapToObject(users));
 
 	socket.on('message', (messageBuffer) => {
 		const message = JSON.parse(deBuffer(messageBuffer));
-		console.log(`Recieved message: ${deBuffer(messageBuffer)}`);
+		console.log(`Recieved message: ${JSON.stringify(message)}`);
 
-		switch (message.command) {
-			case 'USER_DATA':
-				users.set(clientID, message.data);
-				broadcastClients();
-				return;
-			case 'PICK_CARD':
-				broadcastClients();
-				return;
-		}
+		if (roundState === 'selecting') receivedSelectingMessage(clientID, message);
+		else if (roundState === 'displaying') receivedDisplayMessage(clientID, message);
 	})
 
 	socket.on('close', () => {
+		console.log(`Client Disconnected: ${clientID}`);
 		clients.delete(clientID);
 		users.delete(clientID);
-		console.log(`Client Disconnected: ${clientID}`);
+		broadcastUsers();
 	})
 });
 
-function deBuffer(buffer) {
-	return Buffer.from(buffer).toString('utf-8');
+const receivedSelectingMessage = (clientID, message) => {
+	switch (message.command) {
+		case 'USER_DATA':
+			users.set(clientID, message.data);
+			broadcastUsers();
+			return;
+		case 'PICK_CARD':
+			if (userCards.has(clientID)) return;
+
+			let user = users.get(clientID);
+			user.status = 'Complete';
+			users.set(clientID, user);
+			userCards.set(clientID, message.data);
+
+			broadcastUsers();
+			return;
+		case 'END_ROUND':
+			roundState = 'displaying';
+			broadcastUserCards();
+			return;
+	}
 }
+
+const receivedDisplayMessage = (clientID, message) => {
+	switch (message.command) {
+		case 'USER_DATA':
+			users.set(clientID, message.data);
+			broadcastUsers();
+			return;
+		case 'NEW_ROUND':
+			roundState = 'selecting';
+			userCards = new Map();
+			broadcastNewRound();
+			setAllClientStatus('Selecting');
+			return;
+	}
+}
+
+
+
+
+
+
+
 
 function sendMessage(client, command, message) {
 	client.send(JSON.stringify({
@@ -93,14 +136,43 @@ function sendMessage(client, command, message) {
 	}));
 }
 
-function broadcastClients() {
-	const message = Object.fromEntries(users.entries());
+function broadcastNewRound() {
+	clients.forEach((client) => {
+		sendMessage(client, 'NEW_ROUND', {});
+	});
+}
+
+function broadcastUsers() {
+	const message = mapToObject(users);
 	clients.forEach((client) => {
 		sendMessage(client, 'UPDATE_USERS', message);
 	});
 }
 
-function generateClientId() {
+function broadcastUserCards() {
+	const message = mapToObject(userCards);
+	clients.forEach((client) => {
+		sendMessage(client, 'REVEAL', message);
+	});
+}
+
+// Tools ---------------------------------------------------------------------------------------------------------------
+function generateClientID() {
 	return Math.random().toString(36).substr(2, 8);
 }
 
+function deBuffer(buffer) {
+	return Buffer.from(buffer).toString('utf-8');
+}
+
+function mapToObject(map) {
+	return Object.fromEntries(map.entries());
+}
+
+function setAllClientStatus(status) {
+	for (const [key, user] of users) {
+		user.status = status;
+		users.set(key, user);
+	}
+	broadcastUsers();
+}
