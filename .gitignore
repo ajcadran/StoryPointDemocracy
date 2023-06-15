@@ -4,3 +4,10 @@ package-lock.json
 .parcel-cache
 dist
 node_modules
+
+# Yarn
+
+yarn.lock
+
+# IntelliJ IDEA
+.idea

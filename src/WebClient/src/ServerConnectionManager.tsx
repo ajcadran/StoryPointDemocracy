@@ -1,35 +1,66 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
-const ServerConnectionManager = ({ currentUser, chosenCard }) => {
+const ServerConnectionManager = ({ currentUser, selectedCard, setUsers, setCards }) => {
 
-    const [socket, setSocket] = useState(new WebSocket('ws://localhost:3000'));
+  const [socket, setSocket] = useState(null);
 
-    useEffect(() => {
-		if (!socket) return;
+  useEffect(() => {
+    newConnection();
+  }, []);
 
-		socket.onmessage = (event) => {
-			console.log(event.data);
-		}
-	}, [socket]);
-    
+  useEffect(() => {
+    if (!currentUser || !socket) return;
+    sendMessage('USER_DATA', currentUser);
+  }, [currentUser]);
 
-    useEffect(() => {
-		if (!chosenCard || chosenCard === -1) return;
+  useEffect(() => {
+    if (!socket) return;
 
-		socket.send('Pick:'+chosenCard);
-	}, [socket]);
+    socket.onopen = () => {
+      sendMessage('USER_DATA', currentUser);
+    }
 
-	function newConnection() {
-		const newSocket = new WebSocket('ws://localhost:3000');
-    	setSocket(newSocket);
+    socket.onmessage = (event) => {
+      const receivedMessage = JSON.parse(event.data);
+      console.log(receivedMessage);
+      switch (receivedMessage.command) {
+        case 'UPDATE_CARDS':
+          setCards(receivedMessage.data);
+          return;
+        case 'UPDATE_USERS':
+          setUsers(receivedMessage.data);
+          return;
+        case 'SET_ID':
+          currentUser.id = receivedMessage.data;
+          return;
+      }
+    }
+  }, [socket]);
 
-		return () => {
-			newSocket.close();
-		}
-	}
 
-	return (<></>);
+  useEffect(() => {
+    if (!selectedCard || selectedCard === -1) return;
+    sendMessage('PICK_CARD', selectedCard);
+  }, [selectedCard]);
+
+  function newConnection() {
+    const newSocket = new WebSocket('ws://localhost:3000');
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    }
+  }
+
+  function sendMessage(command: string, data: string) {
+    const message = {
+      command: command,
+      data: data,
+    }
+    socket.send(JSON.stringify(message));
+  }
+
+  return (<></>);
 }
 
 export default ServerConnectionManager;

@@ -15,4 +15,5 @@
 ### Web Server
 
 - Navigate to `./src/WebServer`
+- Run `npm install express ws`
 - Run `node src/server.js`

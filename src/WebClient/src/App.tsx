@@ -1,81 +1,58 @@
-import React, { useState } from 'react';
+import {useEffect, useState} from 'react';
+import { Grid, Button } from '@mui/material';
 import TopAppBar from './TopAppBar';
 import UserStatusList from './UserStatusList';
-import { Grid } from '@mui/material';
 import CardDisplay from './CardDisplay';
 import ServerConnectionManager from './ServerConnectionManager';
 
 const App = () => {
 
-	const [currentUser, setCurrentUser] = useState({ id: null, username: null, status: null });
-	const [chosenCard, setChosenCard] = useState(-1);
-	
+	const [currentUser, setCurrentUser] = useState({ id: null, username: "Unnamed", color: 'white', status: null });
+	const [selectedCard, setSelectedCard] = useState(-1);
+
+	const [messageQueue, setMessageQueue] = useState([]);
+
+	const [users, setUsers] = useState({});
+	const [cards, setCards] = useState([]);
+
 	function selectCard(id: number) {
-		console.log('Picked card:', id);
-		setChosenCard(id);
+		setSelectedCard(id);
 	}
 
-	const users = [
-		{
-			id: 0,
-			username: "Apple",
-			status: "Selecting",
-		},
-		{
-			id: 1,
-			username: "Green",
-			status: "Disconnected",
-		},
-		{
-			id: 2,
-			username: "Pie",
-			status: "Selecting",
-		},
-	]
+	const addMessage = (command, message) => {
 
-	const cards = [
-		{
-			id: 0,
-			value: 0,
-		},
-		{
-			id: 1,
-			value: 1,
-		},
-		{
-			id: 2,
-			value: 2,
-		},
-		{
-			id: 3,
-			value: 3,
-		},
-		{
-			id: 4,
-			value: 5,
-		},
-		{
-			id: 5,
-			value: 8,
-		},
-	]
+	}
 
-	
+	const setUsername = (event) => {
+		if (event.key !== 'Enter') return;
+
+		let current = Object.assign({}, currentUser);
+		current.username = event.target.value;
+		setCurrentUser(current);
+	}
+
+	const setColor = (color, event) => {
+		let current = Object.assign({}, currentUser);
+		current.color = color.hex;
+		setCurrentUser(current);
+	}
 
 	return (
 		<>
-			<TopAppBar/>
-			<Grid container spacing={2} sx={{ width: '50%', margin: 'auto' }}>
+			<TopAppBar setColor={setColor} setUsername={setUsername} />
+			<Grid container spacing={2} sx={{ width: '75%', margin: 'auto' }}>
 				<Grid item>
 					<UserStatusList users={users} />
 				</Grid>
 				<Grid item>
-					<CardDisplay cards={cards} callback={selectCard}/>
+					<CardDisplay cards={cards} callback={selectCard} />
+				</Grid>
+				<Grid item>
+					<Button variant="contained">Show Results</Button>
+					<Button variant="contained">Reset Room</Button>
 				</Grid>
 			</Grid>
-			<ServerConnectionManager currentUser={currentUser} chosenCard={chosenCard} />
-			{/** Users List **/}
-			{/** Main Content **/}
+			<ServerConnectionManager currentUser={currentUser} selectedCard={selectedCard} setUsers={setUsers} setCards={setCards} />
 		</>
 	);
 }
