@@ -1,5 +1,5 @@
 
-export const Helper = () => {
+const Helper = () => {
 	function generateClientId() {
 		return Math.random().toString(36).substr(2, 8);
 	}

@@ -1,6 +1,9 @@
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
+import {AppContext} from "./App";
 
-const ServerConnectionManager = ({ messageQueue, currentUser, selectedCard, setSelectedCard, setUsers, setCards, setUserCards }) => {
+const ServerConnectionManager = () => {
+
+  const {state, dispatch} = useContext(AppContext);
 
   const [socket, setSocket] = useState(null);
 
@@ -9,27 +12,35 @@ const ServerConnectionManager = ({ messageQueue, currentUser, selectedCard, setS
   }, []);
 
   useEffect(() => {
-    if (messageQueue.length <= 0) return;
-    const message = messageQueue.pop();
+    if (state.messageQueue.length <= 0) return;
+    const message = state.messageQueue.pop();
     sendMessage(message.command, message.data);
-  }, [messageQueue]);
+  }, [state.messageQueue]);
 
   useEffect(() => {
-    if (!currentUser || !socket) return;
-    sendMessage('USER_DATA', currentUser);
-  }, [currentUser]);
+    if (!state.currentUser || !socket) return;
+    sendMessage('USER_DATA', state.currentUser);
+  }, [state.currentUser]);
 
   useEffect(() => {
     if (!socket) return;
 
     socket.onopen = () => {
-      sendMessage('USER_DATA', currentUser);
+      sendMessage('USER_DATA', state.currentUser);
     }
 
     socket.onmessage = (event) => {
       const receivedMessage = JSON.parse(event.data);
-      console.log(receivedMessage);
+      dispatch({
+        type: 'RECEIVED_MESSAGE',
+        command: receivedMessage.command,
+        data: receivedMessage.data,
+      });
+      /*
       switch (receivedMessage.command) {
+        case 'UPDATE_ROOM':
+          setRoom(receivedMessage.data);
+          return;
         case 'UPDATE_CARDS':
           setCards(receivedMessage.data);
           return;
@@ -46,14 +57,15 @@ const ServerConnectionManager = ({ messageQueue, currentUser, selectedCard, setS
           setUserCards(null);
           setSelectedCard(null);
       }
+      */
     }
   }, [socket]);
 
 
   useEffect(() => {
-    if (!selectedCard || selectedCard === -1) return;
-    sendMessage('PICK_CARD', selectedCard);
-  }, [selectedCard]);
+    if (!state.selectedCard || state.selectedCard === -1) return;
+    sendMessage('PICK_CARD', state.selectedCard);
+  }, [state.selectedCard]);
 
   function newConnection() {
     const newSocket = new WebSocket('ws://localhost:3000');

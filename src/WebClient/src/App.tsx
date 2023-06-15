@@ -1,67 +1,65 @@
-import { useState } from 'react';
+import React from 'react';
+import {createContext, useEffect, useReducer, useState} from 'react';
 import { Grid, Button } from '@mui/material';
 import TopAppBar from './TopAppBar';
 import UserStatusList from './UserStatusList';
 import CardDisplay from './CardDisplay';
 import ServerConnectionManager from './ServerConnectionManager';
 import ResultsDisplay from "./ResultsDisplay";
+import {appReducer, initialState} from "./appReducer";
+
+export const AppContext = createContext(null);
 
 const App = () => {
 
-	const [currentUser, setCurrentUser] = useState({ id: null, username: "User", color: 'white', status: 'Selecting' });
-	const [selectedCard, setSelectedCard] = useState(null);
+	// @ts-ignore
+	const [state, dispatch] = useReducer(appReducer, initialState);
 
-	const [messageQueue, setMessageQueue] = useState([]);
-
-	const [users, setUsers] = useState({});
-	const [cards, setCards] = useState([]);
-	const [userCards, setUserCards] = useState(null);
-
-	function selectCard(id: number) {
-		if (selectedCard === null) setSelectedCard(id);
-	}
+	useEffect(() => {
+		console.log(state);
+	}, [state]);
 
 	const addMessage = (command, message) => {
-		let queue = [...messageQueue];
-		queue.push({
+		dispatch({
+			type: 'ADD_MESSAGE',
 			command: command,
 			data: message,
-		});
-		setMessageQueue(queue);
+		})
 	}
 
-	const setUsername = (event) => {
-		if (event.key !== 'Enter') return;
+	// Return ----------------------------------------------------------------------------------------------------------
 
-		let current = Object.assign({}, currentUser);
-		current.username = event.target.value;
-		setCurrentUser(current);
+	const DisplayRoom = () => {
+		console.log('DisplayRoom');
+		switch (state.room.roundState) {
+			case 'play':
+				return <CardDisplay />;
+			case 'display':
+				return <ResultsDisplay />;
+			default :
+				return null;
+		}
 	}
 
-	const setColor = (color, event) => {
-		let current = Object.assign({}, currentUser);
-		current.color = color.hex;
-		setCurrentUser(current);
-	}
+	if (state === undefined) return null;
 
-	return (
-		<>
-			<TopAppBar setColor={setColor} setUsername={setUsername} />
+	else return (
+		<AppContext.Provider value={{state, dispatch}}>
+			<TopAppBar />
 			<Grid container spacing={2} sx={{ width: '75%', margin: 'auto' }}>
 				<Grid item>
-					<UserStatusList users={users} userCards={userCards} cards={cards} />
+					<UserStatusList />
 				</Grid>
 				<Grid item>
-					{!userCards && <CardDisplay selectedCard={selectedCard} cards={cards} callback={selectCard} />}
-					{userCards && <ResultsDisplay cards={cards} userCards={userCards} />}
+					<DisplayRoom />
 				</Grid>
 				<Grid item>
 					<Button variant="contained" onClick={() => addMessage('END_ROUND', {})}>Show Results</Button>
 					<Button variant="contained" onClick={() => addMessage('NEW_ROUND', {})}>Reset Room</Button>
 				</Grid>
 			</Grid>
-			<ServerConnectionManager messageQueue={messageQueue} currentUser={currentUser} selectedCard={selectedCard} setSelectedCard={setSelectedCard} setUsers={setUsers} setCards={setCards} setUserCards={setUserCards} />
-		</>
+			<ServerConnectionManager />
+		</AppContext.Provider>
 	);
 }
 

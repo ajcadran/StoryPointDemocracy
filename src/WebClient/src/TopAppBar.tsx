@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {FormGroup, IconButton, Menu, MenuItem, TextField} from '@mui/material';
 import {CirclePicker} from "react-color";
 import AppBar from '@mui/material/AppBar';
@@ -6,8 +6,12 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import {AppContext} from "./App";
 
-const TopAppBar = ({setColor, setUsername}) => {
+const TopAppBar = () => {
+
+	const {state, dispatch} = useContext(AppContext);
+	const {cards, users, userCards} = state;
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
@@ -19,6 +23,29 @@ const TopAppBar = ({setColor, setUsername}) => {
 	const closeMenu = () => {
 		setAnchorEl(null);
 	};
+
+	const setUsername = (event) => {
+		if (event.key !== 'Enter') return;
+
+		dispatch({
+			type: 'SET_USERNAME',
+			data: event.target.value,
+		});
+
+		//let current = Object.assign({}, currentUser);
+		//current.username = event.target.value;
+		//setCurrentUser(current);
+	}
+
+	const setColor = (color, event) => {
+		dispatch({
+			type: 'SET_COLOR',
+			data: color.hex,
+		});
+		//let current = Object.assign({}, currentUser);
+		//current.color = color.hex;
+		//setCurrentUser(current);
+	}
 
 	return (
 		<Box sx={{flexGrow: 1}}>

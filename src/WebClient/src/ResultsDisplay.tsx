@@ -1,5 +1,6 @@
 import {CChart} from "@coreui/react-chartjs";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
+import {AppContext} from "./App";
 
 const colors = [
 	'rgb(33, 150, 243)',
@@ -10,7 +11,10 @@ const colors = [
 	'rgb(0, 188, 212)'
 ]
 
-const ResultsDisplay = ({cards, userCards}) => {
+const ResultsDisplay = () => {
+
+	const {state, dispatch} = useContext(AppContext);
+	const {cards, userCards} = state;
 
 	const [labels, setLabels] = useState(null);
 	const [data, setData] = useState(null);

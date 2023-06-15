@@ -9,11 +9,14 @@ const port = 3000;
 let clients = new Map();
 let users = new Map();
 let userCards = new Map();
-let roundState = "selecting"; // selecting, displaying
+let room = {
+	id: "newroom1",
+	roundState: "play", // play, display
+}
 
-// selecting
+// play
 // on receive show results: send message with all chosen cards
-// on receive reset round: set selecting
+// on receive reset round: set play
 
 let cards = [
 	{
@@ -58,7 +61,7 @@ const server = app.listen(port, () => {
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (socket) => {
-	// TODO: Update status to selecting if username existed before
+	// TODO: Update status to play if username existed before
 	const clientID = generateClientID();
 	clients.set(clientID, socket);
 
@@ -66,25 +69,30 @@ wss.on('connection', (socket) => {
 
 	sendMessage(socket, 'SET_ID', clientID);
 	sendMessage(socket, 'UPDATE_CARDS', cards);
+	sendMessage(socket, 'UPDATE_ROOM', room);
+	if (room.roundState == 'display') sendMessage(socket, 'REVEAL', mapToObject(userCards));
 	//sendMessage(socket, 'UPDATE_USERS', mapToObject(users));
 
 	socket.on('message', (messageBuffer) => {
 		const message = JSON.parse(deBuffer(messageBuffer));
 		console.log(`Recieved message: ${JSON.stringify(message)}`);
 
-		if (roundState === 'selecting') receivedSelectingMessage(clientID, message);
-		else if (roundState === 'displaying') receivedDisplayMessage(clientID, message);
+		if (room.roundState === 'play') receivedplayMessage(clientID, message);
+		else if (room.roundState === 'display') receivedDisplayMessage(clientID, message);
 	})
 
 	socket.on('close', () => {
 		console.log(`Client Disconnected: ${clientID}`);
 		clients.delete(clientID);
-		users.delete(clientID);
+		//users.delete(clientID);
+		let user = users.get(clientID);
+		user.status = 'Disconnected';
+		users.set(clientID, user);
 		broadcastUsers();
 	})
 });
 
-const receivedSelectingMessage = (clientID, message) => {
+const receivedplayMessage = (clientID, message) => {
 	switch (message.command) {
 		case 'USER_DATA':
 			users.set(clientID, message.data);
@@ -101,7 +109,7 @@ const receivedSelectingMessage = (clientID, message) => {
 			broadcastUsers();
 			return;
 		case 'END_ROUND':
-			roundState = 'displaying';
+			setRoundState('display');
 			broadcastUserCards();
 			return;
 	}
@@ -114,7 +122,7 @@ const receivedDisplayMessage = (clientID, message) => {
 			broadcastUsers();
 			return;
 		case 'NEW_ROUND':
-			roundState = 'selecting';
+			setRoundState('play');
 			userCards = new Map();
 			broadcastNewRound();
 			setAllClientStatus('Selecting');
@@ -136,6 +144,13 @@ function sendMessage(client, command, message) {
 	}));
 }
 
+function sendMessageFromID(clientID, command, message) {
+	clients.get(clientID).send(JSON.stringify({
+		command: command,
+		data: message,
+	}));
+}
+
 function broadcastNewRound() {
 	clients.forEach((client) => {
 		sendMessage(client, 'NEW_ROUND', {});
@@ -151,9 +166,16 @@ function broadcastUsers() {
 
 function broadcastUserCards() {
 	const message = mapToObject(userCards);
+	console.log(`broadcastUserCards: `, message);
 	clients.forEach((client) => {
 		sendMessage(client, 'REVEAL', message);
+		sendMessage(client, 'UPDATE_ROOM', room);
 	});
+}
+
+function setRoundState(state) {
+	room.roundState = state;
+
 }
 
 // Tools ---------------------------------------------------------------------------------------------------------------

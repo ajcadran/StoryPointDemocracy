@@ -2,7 +2,7 @@
   "name": "story-point-democracy",
   "source": "src/index.html",
   "scripts": {
-    "start": "parcel"
+    "start": "npx parcel src/index.html"
   },
   "dependencies": {
     "@coreui/react-chartjs": "^2.1.3",

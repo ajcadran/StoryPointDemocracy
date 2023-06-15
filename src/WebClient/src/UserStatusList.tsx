@@ -1,10 +1,12 @@
 import { Avatar, Card, Divider, IconButton, List, ListItem, ListItemText } from "@mui/material";
 import { Typography } from '@mui/material';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import HourglassDisabledIcon from '@mui/icons-material/HourglassDisabled';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import NetworkCheckIcon from '@mui/icons-material/NetworkCheck';
 import PersonIcon from '@mui/icons-material/Person';
+import {useContext} from "react";
+import {AppContext} from "./App";
 
 export enum UserStatusType {
     selecting = "Selecting",
@@ -12,7 +14,10 @@ export enum UserStatusType {
     disconnected = "Disconnected",
 }
 
-const UserStatusList = ({ users, userCards, cards }) => {
+const UserStatusList = () => {
+
+    const {state, dispatch} = useContext(AppContext);
+    const {cards, users, userCards} = state;
 
     const userChoice = (user) => {
         // TODO: Improve handling for when no cards have been selected, but END_ROUND is chosen
@@ -57,12 +62,12 @@ export default UserStatusList;
 const UserStatusIcon = ({ status }) => {
     switch (status) {
         case UserStatusType.selecting:
-            return <HourglassEmptyIcon/>
+            return <RadioButtonUncheckedIcon/>
         case UserStatusType.complete:
-            return <CheckCircleOutlineIcon/>
+            return <CheckCircleIcon/>
         case UserStatusType.disconnected:
         default:
-            return <HourglassDisabledIcon/>
+            return <NetworkCheckIcon/>
     }
 }
 

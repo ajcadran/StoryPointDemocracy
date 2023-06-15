@@ -1,9 +1,9 @@
 
 ## WebClient
 
-- More complicated conversion of choice data to pie chart. data array needs to be a count of each category, and labels need to be assigned
 - Send messages to server only from messageQueue
 - Add local storage getter/setter to App.tsx
+  - Allow users to reconnect by storing id and username in local storage
   - Handle when user is reconnecting. 
     - Server resets when everyone is disconnected?
     - Moderator has room reset button?
