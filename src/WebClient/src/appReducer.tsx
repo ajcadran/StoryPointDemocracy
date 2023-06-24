@@ -1,7 +1,6 @@
-import {useState} from "react";
-
 
 export const initialState = {
+	establishingConnection: true,
 	currentUser: { id: null, username: "User", color: 'white', status: 'Selecting' },
 	selectedCard: null,
 	messageQueue: [],
@@ -13,7 +12,6 @@ export const initialState = {
 
 export const appReducer = (state, action) => {
 	console.log(action);
-	//console.log(state);
 	const serverMessage = (command) => {
 		switch (command) {
 			case 'UPDATE_ROOM':
@@ -35,6 +33,7 @@ export const appReducer = (state, action) => {
 				return {
 					...state,
 					currentUser: {...state.currentUser, id: action.data},
+					establishingConnection: false,
 				}
 			case 'REVEAL':
 				return {
@@ -44,14 +43,21 @@ export const appReducer = (state, action) => {
 			case 'NEW_ROUND':
 				return {
 					...state,
-					userCards: action.data,
-					...state,
+					userCards: {},
 					selectedCard: null,
+					room: {...state.room, roundState: 'play' },
 				}
 		}
 	}
 
 	switch (action.type) {
+		case "LOAD_STORAGE": {
+			return {
+				...state,
+				currentUser: action.data,
+				establishingConnection: false,
+			}
+		}
 		case "RECEIVED_MESSAGE": {
 			return serverMessage(action.command);
 		}

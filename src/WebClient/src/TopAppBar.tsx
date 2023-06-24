@@ -1,6 +1,6 @@
-import {useContext, useState} from "react";
-import {FormGroup, IconButton, Menu, MenuItem, TextField} from '@mui/material';
+import React, {useContext, useState} from "react";
 import {CirclePicker} from "react-color";
+import {FormGroup, IconButton, Menu, MenuItem, TextField} from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -26,25 +26,17 @@ const TopAppBar = () => {
 
 	const setUsername = (event) => {
 		if (event.key !== 'Enter') return;
-
 		dispatch({
 			type: 'SET_USERNAME',
 			data: event.target.value,
 		});
-
-		//let current = Object.assign({}, currentUser);
-		//current.username = event.target.value;
-		//setCurrentUser(current);
 	}
 
-	const setColor = (color, event) => {
+	const setColor = (color) => {
 		dispatch({
 			type: 'SET_COLOR',
 			data: color.hex,
 		});
-		//let current = Object.assign({}, currentUser);
-		//current.color = color.hex;
-		//setCurrentUser(current);
 	}
 
 	return (

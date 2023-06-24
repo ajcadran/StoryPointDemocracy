@@ -1,11 +1,10 @@
-import { Avatar, Card, Divider, IconButton, List, ListItem, ListItemText } from "@mui/material";
-import { Typography } from '@mui/material';
+import React, {useContext} from "react";
+import { Avatar, Card, Divider, IconButton, List, ListItem, ListItemText, Typography } from "@mui/material";
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import NetworkCheckIcon from '@mui/icons-material/NetworkCheck';
 import PersonIcon from '@mui/icons-material/Person';
-import {useContext} from "react";
 import {AppContext} from "./App";
 
 export enum UserStatusType {

@@ -1,7 +1,5 @@
-//import Helper from "./Helper";
 const express = require('express');
 const WebSocket = require('ws');
-//const Helper = require('./Helper.js');
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -11,12 +9,8 @@ let users = new Map();
 let userCards = new Map();
 let room = {
 	id: "newroom1",
-	roundState: "play", // play, display
+	roundState: "play", // play, reveal
 }
-
-// play
-// on receive show results: send message with all chosen cards
-// on receive reset round: set play
 
 let cards = [
 	{
@@ -61,81 +55,68 @@ const server = app.listen(port, () => {
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (socket) => {
-	// TODO: Update status to play if username existed before
-	const clientID = generateClientID();
+	var clientID = generateClientID();
 	clients.set(clientID, socket);
 
 	console.log(`Client Connected: ${clientID}`);
 
-	sendMessage(socket, 'SET_ID', clientID);
 	sendMessage(socket, 'UPDATE_CARDS', cards);
 	sendMessage(socket, 'UPDATE_ROOM', room);
-	if (room.roundState == 'display') sendMessage(socket, 'REVEAL', mapToObject(userCards));
-	//sendMessage(socket, 'UPDATE_USERS', mapToObject(users));
+	if (room.roundState === 'reveal') broadcastUserCards();
 
 	socket.on('message', (messageBuffer) => {
 		const message = JSON.parse(deBuffer(messageBuffer));
 		console.log(`Recieved message: ${JSON.stringify(message)}`);
 
-		if (room.roundState === 'play') receivedplayMessage(clientID, message);
-		else if (room.roundState === 'display') receivedDisplayMessage(clientID, message);
+		clientID = receivedMessage(socket, clientID, message);
 	})
 
 	socket.on('close', () => {
 		console.log(`Client Disconnected: ${clientID}`);
 		clients.delete(clientID);
-		//users.delete(clientID);
-		let user = users.get(clientID);
-		user.status = 'Disconnected';
-		users.set(clientID, user);
+		setUserStatus(clientID, 'Disconnected');
 		broadcastUsers();
 	})
 });
 
-const receivedplayMessage = (clientID, message) => {
+const receivedMessage = (socket, clientID, message) => {
 	switch (message.command) {
 		case 'USER_DATA':
+			if (message.data.id != null) {
+				updateClientID(clientID, message.data.id);
+				clientID = message.data.id;
+			} else sendMessage(socket, 'SET_ID', clientID);
+
 			users.set(clientID, message.data);
 			broadcastUsers();
-			return;
+			return clientID;
+		case 'USER_PROFILE':
+			users.set(clientID, message.data);
+			broadcastUsers();
+			return clientID;
 		case 'PICK_CARD':
 			if (userCards.has(clientID)) return;
 
-			let user = users.get(clientID);
-			user.status = 'Complete';
-			users.set(clientID, user);
+			setUserStatus(clientID, 'Complete');
 			userCards.set(clientID, message.data);
 
 			broadcastUsers();
-			return;
+			return clientID;
 		case 'END_ROUND':
-			setRoundState('display');
+			setRoundState('reveal');
 			broadcastUserCards();
-			return;
-	}
-}
-
-const receivedDisplayMessage = (clientID, message) => {
-	switch (message.command) {
-		case 'USER_DATA':
-			users.set(clientID, message.data);
-			broadcastUsers();
-			return;
+			return clientID;
 		case 'NEW_ROUND':
 			setRoundState('play');
 			userCards = new Map();
 			broadcastNewRound();
 			setAllClientStatus('Selecting');
-			return;
+			return clientID;
 	}
 }
 
 
-
-
-
-
-
+// Send Messages ------------------------------------------------------------------------
 
 function sendMessage(client, command, message) {
 	client.send(JSON.stringify({
@@ -166,7 +147,6 @@ function broadcastUsers() {
 
 function broadcastUserCards() {
 	const message = mapToObject(userCards);
-	console.log(`broadcastUserCards: `, message);
 	clients.forEach((client) => {
 		sendMessage(client, 'REVEAL', message);
 		sendMessage(client, 'UPDATE_ROOM', room);
@@ -178,7 +158,20 @@ function setRoundState(state) {
 
 }
 
+function updateClientID(prevID, newID) {
+	const socket = clients.get(prevID);
+	clients.set(newID, socket);
+	clients.delete(prevID);
+
+	const user = users.get(prevID);
+	if (user) {
+		users.set(newID, user);
+		users.delete(prevID);
+	}
+}
+
 // Tools ---------------------------------------------------------------------------------------------------------------
+
 function generateClientID() {
 	return Math.random().toString(36).substr(2, 8);
 }
@@ -193,8 +186,19 @@ function mapToObject(map) {
 
 function setAllClientStatus(status) {
 	for (const [key, user] of users) {
-		user.status = status;
-		users.set(key, user);
+		if (user.status != 'Disconnected') {
+			user.status = status;
+			users.set(key, user);
+		}
 	}
 	broadcastUsers();
+}
+
+function setUserStatus(clientID, status) {
+	let user = users.get(clientID);
+	user = {
+		...user,
+		status: status,
+	}
+	users.set(clientID, user);
 }

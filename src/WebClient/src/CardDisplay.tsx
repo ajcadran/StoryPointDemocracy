@@ -1,4 +1,4 @@
-import { Card, Grid, Typography } from "@mui/material";
+import React, {Card, Grid, Typography} from "@mui/material";
 import "./_common.scss";
 import {useContext} from "react";
 import {AppContext} from "./App";
