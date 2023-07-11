@@ -3,16 +3,23 @@
 
 ### TODO 
 
-- Username TextField: When pressing the 'U' key not in the quick succession of another key, the cursor leaves the TextField and highlights its parent instead.
-
 - First to join room is given moderator status
-  - Able to end round, reset round, and pass moderator to other users
+  - Any user can take or relinquish moderator at any time
+  - Able to end round, reset round
+  - Able to edit the available cards in the room
 
-- End goal: Ability to create/enter/leave rooms. With creator given moderator powers
 - Improve UI
   - Increase size of chart
   - Improve alignment
   - Sanitize username input
+
+- End goal: Ability to create/enter/leave rooms. With creator given moderator powers
+
+### Bugs
+
+- Username TextField: When pressing the 'U' key not in the quick succession of another key, the cursor leaves the TextField and highlights its parent instead.
+- Empty user remains in user list when client disconnects due to bug.
+- For new user, editing card deck shows a new list rather than what is currently being displayed.
 
 ## WebServer
 

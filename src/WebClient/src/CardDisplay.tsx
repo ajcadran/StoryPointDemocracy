@@ -8,8 +8,8 @@ const CardDisplay = () => {
     const {state, dispatch} = useContext(AppContext);
     const {selectedCard, cards} = state;
 
-    const getBackgroundColor = (id) => {
-        return selectedCard === id ? 'grey' : '';
+    const getBackgroundColor = (id: number) => {
+        return selectedCard === id ? 'rgb(84, 110, 122)' : 'rgb(66, 66, 66)';
     }
 
     const CardMap = () => {
@@ -22,8 +22,9 @@ const CardDisplay = () => {
                           dispatch({
                               type: 'SET_SELECTED_CARD',
                               data: card.id,
-                          })}}>
-                    <Typography sx={{ width: 'max-content', height: 'max-content', margin: 'auto', textAlign: 'center' }}>{card.value}</Typography>
+                          })
+                          }}>
+                    <Typography variant="h3">{card.value}</Typography>
                 </Card>
             </Grid>
         ));

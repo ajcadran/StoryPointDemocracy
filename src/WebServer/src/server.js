@@ -19,31 +19,47 @@ let cards = [
 	},
 	{
 		id: 1,
-		value: 1,
+		value: '1/2',
 	},
 	{
 		id: 2,
-		value: 2,
+		value: 1,
 	},
 	{
 		id: 3,
-		value: 3,
+		value: 2,
 	},
 	{
 		id: 4,
-		value: 5,
+		value: 3,
 	},
 	{
 		id: 5,
-		value: 8,
+		value: 5,
 	},
 	{
 		id: 6,
-		value: 13,
+		value: 8,
 	},
 	{
 		id: 7,
+		value: 13,
+	},
+	{
+		id: 8,
 		value: 20,
+	},
+	{
+		id: 9,
+		value: 40,
+	},
+	{
+		id: 10,
+		value: 100,
+	},
+	{
+		id: 11,
+		value: '?',
 	},
 ];
 
@@ -112,6 +128,10 @@ const receivedMessage = (socket, clientID, message) => {
 			broadcastNewRound();
 			setAllClientStatus('Selecting');
 			return clientID;
+		case 'SEND_ROOM_CARDS':
+			cards = message.data;
+			broadcastRoomCards();
+			return clientID;
 	}
 }
 
@@ -138,6 +158,12 @@ function broadcastNewRound() {
 	});
 }
 
+function broadcastRoomCards() {
+	clients.forEach((client) => {
+		sendMessage(client, 'UPDATE_CARDS', cards);
+	});
+}
+
 function broadcastUsers() {
 	const message = mapToObject(users);
 	clients.forEach((client) => {
@@ -155,7 +181,6 @@ function broadcastUserCards() {
 
 function setRoundState(state) {
 	room.roundState = state;
-
 }
 
 function updateClientID(prevID, newID) {

@@ -1,11 +1,12 @@
-import React, {createContext, useReducer} from 'react';
-import {Grid, Button} from '@mui/material';
+import React, { createContext, useReducer } from 'react';
+import { Grid, Button } from '@mui/material';
+import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
 import TopAppBar from './TopAppBar';
 import UserStatusList from './UserStatusList';
 import CardDisplay from './CardDisplay';
 import ServerConnectionManager from './ServerConnectionManager';
 import ResultsDisplay from "./ResultsDisplay";
-import {appReducer, initialState} from "./appReducer";
+import { appReducer, initialState } from "./appReducer";
 
 export const AppContext = createContext(null);
 
@@ -30,30 +31,47 @@ const App = () => {
 				return <CardDisplay />;
 			case 'reveal':
 				return <ResultsDisplay />;
-			default :
+			default:
 				return null;
 		}
 	}
 
+	const theme =
+		createTheme({
+			palette: {
+				mode: 'dark',
+			},
+		});
+
 	if (state === undefined) return null;
 
 	else return (
-		<AppContext.Provider value={{state, dispatch}}>
-			{!state.establishingConnection && [
-			<TopAppBar />,
-			<Grid container justifyContent="center" spacing={2} sx={{ width: '75%', margin: 'auto' }}>
-				<Grid item>
-					<UserStatusList />
-				</Grid>
-				<Grid item>
-					<DisplayRoom />
-				</Grid>
-				<Grid container justifyContent="center">
-					<Button variant="contained" onClick={() => addMessage('END_ROUND', {})}>Show Results</Button>
-					<Button variant="contained" onClick={() => addMessage('NEW_ROUND', {})}>Reset Room</Button>
-				</Grid>
-			</Grid>
-			]}
+		<AppContext.Provider value={{ state, dispatch }}>
+			<ThemeProvider theme={theme}>
+				{!state.establishingConnection && [
+					<TopAppBar />,
+					<Grid container spacing={2} sx={{ margin: 'auto', mb: 2, width: '75%', justifyContent: 'center' }}>
+						<Grid item>
+							<UserStatusList />
+						</Grid>
+						<Grid item>
+							<DisplayRoom />
+						</Grid>
+					</Grid>,
+					<Grid container spacing={2} alignItems="stretch" sx={{ justifyContent: 'center' }}>
+						<Grid item>
+							{state.room.roundState === "play" && 
+								<Button variant="contained" onClick={() => addMessage('END_ROUND', {})}>Show Results</Button>
+							}
+						</Grid>
+						<Grid item>
+							{state.room.roundState === "reveal" && 
+								<Button variant="contained" onClick={() => addMessage('NEW_ROUND', {})}>Reset Room</Button>
+							}
+						</Grid>
+					</Grid>
+				]}
+			</ThemeProvider>
 			<ServerConnectionManager />
 		</AppContext.Provider>
 	);

@@ -55,7 +55,7 @@ const ServerConnectionManager = () => {
 
   // On Selected Card Change
   useEffect(() => {
-    if (!state.selectedCard || state.selectedCard === -1) return;
+    if (state.selectedCard === null || state.selectedCard === -1) return;
     sendMessage('PICK_CARD', state.selectedCard);
   }, [state.selectedCard]);
 

@@ -19,7 +19,6 @@ const UserStatusList = () => {
     const {cards, users, userCards} = state;
 
     const userChoice = (user) => {
-        // TODO: Improve handling for when no cards have been selected, but END_ROUND is chosen
         if (cards !== null && userCards !== null && cards[userCards[user]] != undefined) return cards[userCards[user]].value;
         else return null;
     }
@@ -30,7 +29,6 @@ const UserStatusList = () => {
         return Object.keys(users).map((user: any) => (
             <ListItem
                 key={users[user].id}
-                secondaryAction={<IconButton><UserStatusIcon status={users[user].status} /></IconButton>}
             >
                 <ListItemAvatar>
                     <Avatar sx={{ color: users[user].color || 'white' }}>
@@ -41,15 +39,18 @@ const UserStatusList = () => {
                     primary={users[user].username}
                     secondary={userChoice(user)}
                 />
+                <IconButton sx={{ float: 'right' }}><UserStatusIcon status={users[user].status} /></IconButton>
             </ListItem>
         ));
     }
 
     return (
-        <Card sx={{ width: 'max-content', minWidth: '150px' }}>
-            <List dense>
-                <Typography sx={{ textAlign: 'center' }}>Users</Typography>
-                <Divider/>
+        <Card sx={{ minWidth: 'max-content', maxWidth: '25%', backgroundColor: '#333' }}>
+            <List dense sx={{ pt: 0 }}>
+                <ListItem sx={{ backgroundColor: '#333' }}>
+                    <Typography sx={{ textAlign: 'center' }}>Users</Typography>
+                </ListItem>
+                <Divider light />
                 <UserList/>
             </List>
         </Card>
