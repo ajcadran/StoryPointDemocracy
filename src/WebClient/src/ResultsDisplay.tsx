@@ -1,6 +1,6 @@
-import React, {useContext, useEffect, useState} from "react";
-import {CChart} from "@coreui/react-chartjs";
-import {AppContext} from "./App";
+import React, { useContext, useEffect, useState } from "react";
+import { CChart } from "@coreui/react-chartjs";
+import { AppContext } from "./App";
 
 const colors = [
 	'rgb(169, 188, 255)',
@@ -15,8 +15,8 @@ const colors = [
 const ResultsDisplay = () => {
 
 	// @ts-ignore
-	const {state} = useContext(AppContext);
-	const {room, userCards} = state;
+	const { state } = useContext(AppContext);
+	const { room, userCards } = state;
 
 	const [labels, setLabels] = useState([] as String[]);
 	const [data, setData] = useState([] as Number[]);
@@ -48,7 +48,7 @@ const ResultsDisplay = () => {
 				backgroundColor: colors,
 				hoverOffset: 4
 			}]
-		}}/>
+		}} />
 	);
 }
 export default ResultsDisplay;

@@ -3,11 +3,11 @@ import { Box, Button, Checkbox, Grid, Modal, Typography } from '@mui/material';
 import { AppContext } from "./App";
 import { CardModel } from "./Models";
 
-const CardModal = ({modalOpen, closeModal}) => {
+const CardModal = ({ modalOpen, closeModal }) => {
 
 	// @ts-ignore
-	const {state, dispatch} = useContext(AppContext);
-	const {room} = state;
+	const { state, dispatch } = useContext(AppContext);
+	const { room } = state;
 
 	const [currentCards, setCurrentCards] = useState({} as CardModel[]);
 
@@ -15,22 +15,22 @@ const CardModal = ({modalOpen, closeModal}) => {
 		setCurrentCards(room.cards as CardModel[]);
 	}, [room.cards]);
 
-    const RenderCheckboxes = () => {
+	const RenderCheckboxes = () => {
 		const selected = (id: number) => {
 			const i = currentCards.findIndex(card => card.id === id);
 			var temp = [...currentCards];
 			temp[i].show = !currentCards[i].show;
 			setCurrentCards(temp);
 		}
-        
-        return (
-            <Grid container sx={{ margin: 'auto' }}>
-                {currentCards.map(card => (
-                    <Grid item key={card.id}><Checkbox checked={card.show} onClick={() => selected(card.id)} />{card.value}</Grid>
-                ))}
-            </Grid>
-        );
-    }
+
+		return (
+			<Grid container sx={{ margin: 'auto' }}>
+				{currentCards.map(card => (
+					<Grid item key={card.id}><Checkbox checked={card.show} onClick={() => selected(card.id)} />{card.value}</Grid>
+				))}
+			</Grid>
+		);
+	}
 
 	const sendCards = () => {
 		dispatch({
@@ -40,30 +40,30 @@ const CardModal = ({modalOpen, closeModal}) => {
 		});
 	}
 
-    return (
-        <Modal
-				open={modalOpen}
-				onClose={closeModal}
-				sx={{ width: '100vw', height: '100vh' }}
+	return (
+		<Modal
+			open={modalOpen}
+			onClose={closeModal}
+			sx={{ width: '100vw', height: '100vh' }}
+		>
+			<Box
+				sx={{
+					margin: 'auto',
+					width: 'max-content',
+					maxWidth: '20%',
+					height: 'max-content',
+					padding: '20px',
+					backgroundColor: '#333',
+					color: 'white',
+					borderRadius: '10px',
+					textAlign: 'center',
+				}}
 			>
-				<Box
-					sx={{ 
-						margin: 'auto',
-						width: 'max-content', 
-						maxWidth: '20%',
-						height: 'max-content',
-						padding: '20px', 
-						backgroundColor: '#333',
-						color: 'white',
-						borderRadius: '10px',
-						textAlign: 'center',
-					}}
-				>
-					<Typography variant="h4">Configure Deck</Typography>
-                    <RenderCheckboxes/>
-                    <Button variant="contained" onClick={sendCards}>SAVE DECK</Button>
-				</Box>
-			</Modal>
-    );
+				<Typography variant="h4">Configure Deck</Typography>
+				<RenderCheckboxes />
+				<Button variant="contained" onClick={sendCards}>SAVE DECK</Button>
+			</Box>
+		</Modal>
+	);
 }
 export default CardModal;

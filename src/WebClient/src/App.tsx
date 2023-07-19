@@ -60,12 +60,12 @@ const App = () => {
 					</Grid>,
 					<Grid container spacing={2} alignItems="stretch" sx={{ justifyContent: 'center' }}>
 						<Grid item>
-							{state.room.roundState === "play" && 
+							{state.room.roundState === "play" &&
 								<Button variant="contained" onClick={() => addMessage('END_ROUND', {})}>Show Results</Button>
 							}
 						</Grid>
 						<Grid item>
-							{state.room.roundState === "reveal" && 
+							{state.room.roundState === "reveal" &&
 								<Button variant="contained" onClick={() => addMessage('NEW_ROUND', {})}>Reset Room</Button>
 							}
 						</Grid>

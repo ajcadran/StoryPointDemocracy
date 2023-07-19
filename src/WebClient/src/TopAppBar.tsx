@@ -1,14 +1,14 @@
-import React, {useContext, useState} from "react";
-import {CirclePicker} from "react-color";
-import {Divider, FormGroup, IconButton, Menu, MenuItem, TextField, AppBar, Box, Toolbar, Typography} from '@mui/material';
+import React, { useContext, useState } from "react";
+import { CirclePicker } from "react-color";
+import { Divider, FormGroup, IconButton, Menu, MenuItem, TextField, AppBar, Box, Toolbar, Typography } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CardModal from "./CardModal";
-import {AppContext} from "./App";
+import { AppContext } from "./App";
 
 const TopAppBar = () => {
 
 	// @ts-ignore
-	const {state, dispatch} = useContext(AppContext);
+	const { state, dispatch } = useContext(AppContext);
 
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
@@ -65,12 +65,12 @@ const TopAppBar = () => {
 		<Box sx={{ flexGrow: 1 }}>
 			<AppBar position="static" sx={{ backgroundColor: '#222' }}>
 				<Toolbar>
-					<Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+					<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 						Story Point Democracy
 					</Typography>
 					<Typography sx={{ float: 'right' }}>{state.currentUser.username}</Typography>
 					<IconButton onClick={openMenu}>
-						<AccountCircleIcon/>
+						<AccountCircleIcon />
 					</IconButton>
 				</Toolbar>
 			</AppBar>
@@ -82,21 +82,21 @@ const TopAppBar = () => {
 			>
 				<FormGroup>
 					<MenuItem key="configure-deck" onClick={openModal}>
-						<Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+						<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 							Configure Deck
 						</Typography>
 					</MenuItem>
 					<MenuItem key="clear-users" onClick={clearDeadUsers}>
-						<Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+						<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 							Clear Disconnected Users
 						</Typography>
 					</MenuItem>
-					<Divider/>
+					<Divider />
 					<MenuItem key="username">
-						<TextField label="Username" variant="outlined" onKeyDown={setUsername}/>
+						<TextField label="Username" variant="outlined" onKeyDown={setUsername} />
 					</MenuItem>
 					<MenuItem key="colorPicker">
-						<CirclePicker onChangeComplete={setColor}/>
+						<CirclePicker onChangeComplete={setColor} />
 					</MenuItem>
 				</FormGroup>
 			</Menu>
