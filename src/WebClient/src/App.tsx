@@ -1,6 +1,6 @@
 import React, { createContext, useReducer } from 'react';
 import { Grid, Button } from '@mui/material';
-import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import TopAppBar from './TopAppBar';
 import UserStatusList from './UserStatusList';
 import CardDisplay from './CardDisplay';

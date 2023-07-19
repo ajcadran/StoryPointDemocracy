@@ -3,9 +3,7 @@
 
 ### TODO 
 
-- For card deck, change termonology: checked > show
-  - Instead of removing cards from deck to send to server, make list of ID's and let server send list of cards.
-  - The server should be the only one with the hardcoded list of cards
+- Limit usernames to characters only, and a maximum of 20 Characters
 
 - First to join room is given moderator status
   - Any user can take or relinquish moderator at any time
@@ -17,12 +15,13 @@
   - Improve alignment
   - Sanitize username input
 
+- Notify user when disconnected from server and automatically attempt rejoin
+
 - End goal: Ability to create/enter/leave rooms. With creator given moderator powers
 
 ### Bugs
 
 - Username TextField: When pressing the 'U' or 'C' keys not in the quick succession of another key, the cursor leaves the TextField and highlights its parent instead.
-- For new user, editing card deck shows a new list rather than what is currently being displayed.
 
 ## WebServer
 

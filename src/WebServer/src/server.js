@@ -1,67 +1,82 @@
 const express = require('express');
 const WebSocket = require('ws');
 
+// Const ---------------------------------------------------------------------------------------------------
 const hostname = '127.0.0.1';
 const port = 3000;
 
+const scrumCards = [
+	{
+		id: 0,
+		value: 0,
+		show: true,
+	},
+	{
+		id: 1,
+		value: '1/2',
+		show: true,
+	},
+	{
+		id: 2,
+		value: 1,
+		show: true,
+	},
+	{
+		id: 3,
+		value: 2,
+		show: true,
+	},
+	{
+		id: 4,
+		value: 3,
+		show: true,
+	},
+	{
+		id: 5,
+		value: 5,
+		show: true,
+	},
+	{
+		id: 6,
+		value: 8,
+		show: true,
+	},
+	{
+		id: 7,
+		value: 13,
+		show: true,
+	},
+	{
+		id: 8,
+		value: 20,
+		show: true,
+	},
+	{
+		id: 9,
+		value: 40,
+		show: true,
+	},
+	{
+		id: 10,
+		value: 100,
+		show: true,
+	},
+	{
+		id: 11,
+		value: '?',
+		show: true,
+	},
+];
+
+// Vars ----------------------------------------------------------------------------------------------------
 let clients = new Map();
 let users = new Map();
 let userCards = new Map();
 let room = {
 	id: "newroom1",
 	roundState: "play", // play, reveal
+	cards: scrumCards,
 }
-
-let cards = [
-	{
-		id: 0,
-		value: 0,
-	},
-	{
-		id: 1,
-		value: '1/2',
-	},
-	{
-		id: 2,
-		value: 1,
-	},
-	{
-		id: 3,
-		value: 2,
-	},
-	{
-		id: 4,
-		value: 3,
-	},
-	{
-		id: 5,
-		value: 5,
-	},
-	{
-		id: 6,
-		value: 8,
-	},
-	{
-		id: 7,
-		value: 13,
-	},
-	{
-		id: 8,
-		value: 20,
-	},
-	{
-		id: 9,
-		value: 40,
-	},
-	{
-		id: 10,
-		value: 100,
-	},
-	{
-		id: 11,
-		value: '?',
-	},
-];
 
 const app = express();
 const server = app.listen(port, () => {
@@ -70,13 +85,14 @@ const server = app.listen(port, () => {
 
 const wss = new WebSocket.Server({ server });
 
+// Client --------------------------------------------------------------------------------------------------
 wss.on('connection', (socket) => {
 	var clientID = generateClientID();
 	clients.set(clientID, socket);
 
 	console.log(`Client Connected: ${clientID}`);
 
-	sendMessage(socket, 'UPDATE_CARDS', cards);
+	sendMessage(socket, 'UPDATE_CARDS', room.cards);
 	sendMessage(socket, 'UPDATE_ROOM', room);
 	if (room.roundState === 'reveal') broadcastUserCards();
 
@@ -129,8 +145,12 @@ const receivedMessage = (socket, clientID, message) => {
 			setAllClientStatus('Selecting');
 			return clientID;
 		case 'SEND_ROOM_CARDS':
-			cards = message.data;
+			room.cards = message.data;
 			broadcastRoomCards();
+			return clientID;
+		case 'DELETE_DEAD_USERS': // DEBUG
+			deleteDisconnectedClients();
+			broadcastUsers();
 			return clientID;
 	}
 }
@@ -160,11 +180,12 @@ function broadcastNewRound() {
 
 function broadcastRoomCards() {
 	clients.forEach((client) => {
-		sendMessage(client, 'UPDATE_CARDS', cards);
+		sendMessage(client, 'UPDATE_CARDS', room.cards);
 	});
 }
 
 function broadcastUsers() {
+	// TODO: Remove all dead users (No data, but still showing in user list)
 	const message = mapToObject(users);
 	clients.forEach((client) => {
 		sendMessage(client, 'UPDATE_USERS', message);
@@ -226,4 +247,13 @@ function setUserStatus(clientID, status) {
 		status: status,
 	}
 	users.set(clientID, user);
+}
+
+function deleteDisconnectedClients() {
+	for (const clientID of users.keys()) {
+		if (users.get(clientID).status === "Disconnected" || users.get(clientID).status === null) {
+			clients.delete(clientID);
+			users.delete(clientID);
+		}
+	}
 }

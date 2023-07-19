@@ -1,116 +1,43 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Button, Checkbox, Grid, Modal, Typography } from '@mui/material';
 import { AppContext } from "./App";
-
-const scrumCards = [
-    {
-		id: 0,
-		value: 0,
-		checked: true,
-	},
-	{
-		id: 1,
-		value: '1/2',
-		checked: true,
-	},
-	{
-		id: 2,
-		value: 1,
-		checked: true,
-	},
-	{
-		id: 3,
-		value: 2,
-		checked: true,
-	},
-	{
-		id: 4,
-		value: 3,
-		checked: true,
-	},
-	{
-		id: 5,
-		value: 5,
-		checked: true,
-	},
-	{
-		id: 6,
-		value: 8,
-		checked: true,
-	},
-	{
-		id: 7,
-		value: 13,
-		checked: true,
-	},
-	{
-		id: 8,
-		value: 20,
-		checked: true,
-	},
-	{
-		id: 9,
-		value: 40,
-		checked: true,
-	},
-	{
-		id: 10,
-		value: 100,
-		checked: true,
-	},
-	{
-		id: 11,
-		value: '?',
-		checked: true,
-	},
-];
+import { CardModel } from "./Models";
 
 const CardModal = ({modalOpen, closeModal}) => {
 
-	const {dispatch} = useContext(AppContext);
-	
-	const [currentCards, setCurrentCards] = useState(scrumCards);
+	// @ts-ignore
+	const {state, dispatch} = useContext(AppContext);
+	const {room} = state;
 
-    const ScrumCheckboxes = () => {
+	const [currentCards, setCurrentCards] = useState({} as CardModel[]);
 
-		useEffect(() => {
-			setCurrentCards(scrumCards);
-		}, []);
+	useEffect(() => {
+		setCurrentCards(room.cards as CardModel[]);
+	}, [room.cards]);
 
-		const isChecked = (id: number) => {
-			console.log('is');
-			//return currentCards.some(card => card.id === id);
-			return currentCards[currentCards.findIndex(card => card.id === id)].checked;
-		}
-
-		const clicked = (id: number) => {
+    const RenderCheckboxes = () => {
+		const selected = (id: number) => {
 			const i = currentCards.findIndex(card => card.id === id);
 			var temp = [...currentCards];
-			temp[i].checked = !currentCards[i].checked;
+			temp[i].show = !currentCards[i].show;
 			setCurrentCards(temp);
 		}
         
         return (
             <Grid container sx={{ margin: 'auto' }}>
                 {currentCards.map(card => (
-                    <Grid item><Checkbox checked={card.checked} onClick={() => clicked(card.id)} />{card.value}</Grid>
+                    <Grid item key={card.id}><Checkbox checked={card.show} onClick={() => selected(card.id)} />{card.value}</Grid>
                 ))}
             </Grid>
         );
     }
 
-	const formatCards = () => {
-		return currentCards.map(card => {
-			if (card.checked) return { id: card.id, value: card.value }
-		}).filter(card => card != null);
-	}
-
 	const sendCards = () => {
 		dispatch({
 			type: 'ADD_MESSAGE',
 			command: 'SEND_ROOM_CARDS',
-			data: formatCards(),
-		})
+			data: currentCards,
+		});
 	}
 
     return (
@@ -133,7 +60,7 @@ const CardModal = ({modalOpen, closeModal}) => {
 					}}
 				>
 					<Typography variant="h4">Configure Deck</Typography>
-                    <ScrumCheckboxes/>
+                    <RenderCheckboxes/>
                     <Button variant="contained" onClick={sendCards}>SAVE DECK</Button>
 				</Box>
 			</Modal>

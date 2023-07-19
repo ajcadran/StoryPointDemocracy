@@ -12,6 +12,7 @@ function setLocalStorageUser(obj: Object) {
 
 const ServerConnectionManager = () => {
 
+  // @ts-ignore
   const {state, dispatch} = useContext(AppContext);
 
   const [socket, setSocket] = useState();

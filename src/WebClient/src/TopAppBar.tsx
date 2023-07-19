@@ -1,16 +1,13 @@
 import React, {useContext, useState} from "react";
 import {CirclePicker} from "react-color";
-import {Divider, FormGroup, IconButton, Menu, MenuItem, TextField} from '@mui/material';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import {Divider, FormGroup, IconButton, Menu, MenuItem, TextField, AppBar, Box, Toolbar, Typography} from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import {AppContext} from "./App";
 import CardModal from "./CardModal";
+import {AppContext} from "./App";
 
 const TopAppBar = () => {
 
+	// @ts-ignore
 	const {state, dispatch} = useContext(AppContext);
 
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -53,6 +50,15 @@ const TopAppBar = () => {
 		});
 	}
 
+	// DEBUG
+	const clearDeadUsers = () => {
+		dispatch({
+			type: 'ADD_MESSAGE',
+			command: 'DELETE_DEAD_USERS',
+			data: null,
+		})
+	}
+
 	// Return --------------------------------------------------------------
 
 	return (
@@ -78,6 +84,11 @@ const TopAppBar = () => {
 					<MenuItem key="configure-deck" onClick={openModal}>
 						<Typography variant="h6" component="div" sx={{flexGrow: 1}}>
 							Configure Deck
+						</Typography>
+					</MenuItem>
+					<MenuItem key="clear-users" onClick={clearDeadUsers}>
+						<Typography variant="h6" component="div" sx={{flexGrow: 1}}>
+							Clear Disconnected Users
 						</Typography>
 					</MenuItem>
 					<Divider/>

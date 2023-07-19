@@ -1,13 +1,13 @@
+import { UserModel } from "./Models";
 
 export const initialState = {
 	establishingConnection: true,
-	currentUser: { id: null, username: "User", color: 'white', status: 'Selecting' },
+	currentUser: new UserModel(null, "User", 'grey', 'Selecting'), //{ id: null, username: "User", color: 'grey', status: 'Selecting' },
+	userCards: null,
 	selectedCard: null,
 	messageQueue: [],
 	room: {},
 	users: [],
-	cards: [],
-	userCards: null,
 }
 
 export const appReducer = (state, action) => {
@@ -22,7 +22,7 @@ export const appReducer = (state, action) => {
 			case 'UPDATE_CARDS':
 				return {
 					...state,
-					cards: action.data,
+					room: {...state.room, cards: action.data},
 				}
 			case 'UPDATE_USERS':
 				return {

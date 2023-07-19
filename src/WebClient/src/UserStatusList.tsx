@@ -15,11 +15,12 @@ export enum UserStatusType {
 
 const UserStatusList = () => {
 
-    const {state, dispatch} = useContext(AppContext);
-    const {cards, users, userCards} = state;
+    // @ts-ignore
+    const {state} = useContext(AppContext);
+    const {room, users, userCards} = state;
 
     const userChoice = (user) => {
-        if (cards !== null && userCards !== null && cards[userCards[user]] != undefined) return cards[userCards[user]].value;
+        if (room.cards !== null && userCards !== null && room.cards[userCards[user]] != undefined) return room.cards[userCards[user]].value;
         else return null;
     }
 
@@ -31,7 +32,7 @@ const UserStatusList = () => {
                 key={users[user].id}
             >
                 <ListItemAvatar>
-                    <Avatar sx={{ color: users[user].color || 'white' }}>
+                    <Avatar sx={{ backgroundColor: users[user].color || 'grey', color: 'white' }}>
                         <PersonIcon/>
                     </Avatar>
                 </ListItemAvatar>
@@ -47,7 +48,7 @@ const UserStatusList = () => {
     return (
         <Card sx={{ minWidth: 'max-content', maxWidth: '25%', backgroundColor: '#333' }}>
             <List dense sx={{ pt: 0 }}>
-                <ListItem sx={{ backgroundColor: '#333' }}>
+                <ListItem key="users-tag" sx={{ backgroundColor: '#333' }}>
                     <Typography sx={{ textAlign: 'center' }}>Users</Typography>
                 </ListItem>
                 <Divider light />

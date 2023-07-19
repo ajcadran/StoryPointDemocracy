@@ -14,29 +14,30 @@ const colors = [
 
 const ResultsDisplay = () => {
 
-	const {state, dispatch} = useContext(AppContext);
-	const {cards, userCards} = state;
+	// @ts-ignore
+	const {state} = useContext(AppContext);
+	const {room, userCards} = state;
 
-	const [labels, setLabels] = useState([]);
-	const [data, setData] = useState([]);
+	const [labels, setLabels] = useState([] as String[]);
+	const [data, setData] = useState([] as Number[]);
 
 	useEffect(() => {
-		let temp_labels = [];
-		let temp_data = [];
-		for (const cardID in cards) {
+		let temp_labels = [] as String[];
+		let temp_data = [] as Number[];
+		for (const cardID in room.cards) {
 			let num = 0;
 			for (const userID in userCards) {
-				if (cards[cardID].id === userCards[userID])
+				if (room.cards[cardID].id === userCards[userID])
 					++num;
 			}
 			if (num > 0) {
-				temp_labels.push(cards[cardID].value);
+				temp_labels.push(room.cards[cardID].value);
 				temp_data.push(num);
 			}
 		}
 		setLabels(temp_labels);
 		setData(temp_data);
-	}, [cards, userCards]);
+	}, [room.cards, userCards]);
 
 	return (
 		<CChart type="pie" data={{
