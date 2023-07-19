@@ -3,6 +3,10 @@
 
 ### TODO 
 
+- For card deck, change termonology: checked > show
+  - Instead of removing cards from deck to send to server, make list of ID's and let server send list of cards.
+  - The server should be the only one with the hardcoded list of cards
+
 - First to join room is given moderator status
   - Any user can take or relinquish moderator at any time
   - Able to end round, reset round
@@ -17,8 +21,7 @@
 
 ### Bugs
 
-- Username TextField: When pressing the 'U' key not in the quick succession of another key, the cursor leaves the TextField and highlights its parent instead.
-- Empty user remains in user list when client disconnects due to bug.
+- Username TextField: When pressing the 'U' or 'C' keys not in the quick succession of another key, the cursor leaves the TextField and highlights its parent instead.
 - For new user, editing card deck shows a new list rather than what is currently being displayed.
 
 ## WebServer

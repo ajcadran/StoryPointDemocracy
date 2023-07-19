@@ -9,7 +9,13 @@
 
 - Navigate to `./src/WebClient`
 - Run `npm install`
-- Run `npx parcel src/index.html`
+- Run `npm start`
+
+#### Dockerize
+
+- Navigate to `./src/WebClient`
+- Build Image `sudo docker build . -t <tag>`
+- Run Container `sudo docker run -p 1234:1234 -itd --name spd-client <tag>`
 
 
 ### Web Server
@@ -17,3 +23,9 @@
 - Navigate to `./src/WebServer`
 - Run `npm install express ws`
 - Run `node src/server.js`
+
+#### Dockerize
+
+- Navigate to `./src/WebServer`
+- Build Image `sudo docker build . -t <tag>`
+- Run Container `sudo docker run -p 3000:3000 -itd --name spd-server <tag>`
