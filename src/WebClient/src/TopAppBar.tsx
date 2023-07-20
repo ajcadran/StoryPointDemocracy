@@ -36,6 +36,11 @@ const TopAppBar = () => {
 	// User Profile -------------------------------------------------------
 
 	const setUsername = (event) => {
+		console.log(/[A-Za-z0-9\s]/.test(event.key));
+		if (!/[A-Za-z0-9\s]/.test(event.key)) {
+			event.preventDefault();
+			return;
+		}
 		if (event.key !== 'Enter') return;
 		dispatch({
 			type: 'SET_USERNAME',
@@ -93,7 +98,7 @@ const TopAppBar = () => {
 					</MenuItem>
 					<Divider />
 					<MenuItem key="username">
-						<TextField label="Username" variant="outlined" onKeyDown={setUsername} />
+						<TextField label="Username" variant="outlined" onKeyDown={setUsername} inputProps={{ maxLength: 18 }} />
 					</MenuItem>
 					<MenuItem key="colorPicker">
 						<CirclePicker onChangeComplete={setColor} />

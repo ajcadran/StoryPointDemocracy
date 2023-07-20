@@ -3,7 +3,7 @@
 
 ### TODO 
 
-- Limit usernames to characters only, and a maximum of 20 Characters
+- Improve card size. Automatically resize depending on number of cards
 
 - First to join room is given moderator status
   - Any user can take or relinquish moderator at any time

@@ -9,7 +9,7 @@ const CardModal = ({ modalOpen, closeModal }) => {
 	const { state, dispatch } = useContext(AppContext);
 	const { room } = state;
 
-	const [currentCards, setCurrentCards] = useState({} as CardModel[]);
+	const [currentCards, setCurrentCards] = useState<CardModel[]>();
 
 	useEffect(() => {
 		setCurrentCards(room.cards as CardModel[]);

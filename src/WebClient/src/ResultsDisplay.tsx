@@ -18,8 +18,8 @@ const ResultsDisplay = () => {
 	const { state } = useContext(AppContext);
 	const { room, userCards } = state;
 
-	const [labels, setLabels] = useState([] as String[]);
-	const [data, setData] = useState([] as Number[]);
+	const [labels, setLabels] = useState<String[]>();
+	const [data, setData] = useState<Number[]>();
 
 	useEffect(() => {
 		let temp_labels = [] as String[];

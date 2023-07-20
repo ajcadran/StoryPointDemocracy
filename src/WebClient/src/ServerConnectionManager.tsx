@@ -15,7 +15,7 @@ const ServerConnectionManager = () => {
 	// @ts-ignore
 	const { state, dispatch } = useContext(AppContext);
 
-	const [socket, setSocket] = useState();
+	const [socket, setSocket] = useState<WebSocket>();
 
 	// On Load
 	useEffect(() => {
@@ -52,6 +52,19 @@ const ServerConnectionManager = () => {
 				data: receivedMessage.data,
 			});
 		}
+
+		// TODO: Automatically reconnect to server when disconnected
+		/*
+		socket.onclose = () => {
+			const retryConnection = async () => {
+				while (socket.readyState === WebSocket.CLOSED) {
+					console.log('Retrying Server Connection'); // DEBUG
+					await newConnection();
+				}	
+			}
+			retryConnection();
+		}
+		*/
 	}, [socket]);
 
 	// On Selected Card Change
@@ -60,7 +73,7 @@ const ServerConnectionManager = () => {
 		sendMessage('PICK_CARD', state.selectedCard);
 	}, [state.selectedCard]);
 
-	function newConnection() {
+	async function newConnection() {
 		const localUser = { ...state.currentUser, ...getLocalStorageUser() };
 		if (localUser.id)
 			dispatch({
