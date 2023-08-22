@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { CirclePicker } from "react-color";
-import { Divider, FormGroup, IconButton, Menu, MenuItem, TextField, AppBar, Box, Toolbar, Typography } from '@mui/material';
+import { Divider, FormGroup, IconButton, Menu, MenuItem, TextField, AppBar, Box, Toolbar, Typography, scopedCssBaselineClasses } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CardModal from "./CardModal";
 import { AppContext } from "./App";
@@ -35,9 +35,9 @@ const TopAppBar = () => {
 
 	// User Profile -------------------------------------------------------
 
-	const setUsername = (event) => {
-		console.log(/[A-Za-z0-9\s]/.test(event.key));
-		if (!/[A-Za-z0-9\s]/.test(event.key)) {
+	const setUsername = (event: any) => {
+		event.stopPropagation();
+		if (!/^[a-zA-Z0-9]+$/.test(event.key)) {
 			event.preventDefault();
 			return;
 		}
@@ -54,6 +54,13 @@ const TopAppBar = () => {
 			data: color.hex,
 		});
 	}
+
+	const handlePaste = (event: any) => {
+		event.preventDefault();
+		const pastedText = event.clipboardData.getData('text/plain');
+		if (/^[a-zA-Z0-9]+$/.test(pastedText)) 
+			document.execCommand('insertText', false, pastedText);
+	  };
 
 	// DEBUG
 	const clearDeadUsers = () => {
@@ -98,7 +105,7 @@ const TopAppBar = () => {
 					</MenuItem>
 					<Divider />
 					<MenuItem key="username">
-						<TextField label="Username" variant="outlined" onKeyDown={setUsername} inputProps={{ maxLength: 18 }} />
+						<TextField label="Username" variant="outlined" onKeyDown={setUsername} onPaste={(e) => handlePaste(e)} inputProps={{ maxLength: 18 }} />
 					</MenuItem>
 					<MenuItem key="colorPicker">
 						<CirclePicker onChangeComplete={setColor} />

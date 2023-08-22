@@ -48,6 +48,9 @@ const CardModal = ({ modalOpen, closeModal }) => {
 		>
 			<Box
 				sx={{
+					position: 'absolute',
+					top: '25%',
+					left: '40%',
 					margin: 'auto',
 					width: 'max-content',
 					maxWidth: '20%',

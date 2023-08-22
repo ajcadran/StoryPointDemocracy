@@ -40,7 +40,7 @@ const ResultsDisplay = () => {
 	}, [room.cards, userCards]);
 
 	return (
-		<CChart type="pie" data={{
+		<CChart type="pie" style={{ width: '150%' }} data={{
 			labels: labels,
 			datasets: [{
 				label: 'Voting Results',

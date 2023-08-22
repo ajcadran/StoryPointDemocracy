@@ -15,7 +15,7 @@
 
 - Navigate to `./src/WebClient`
 - Build Image `sudo docker build . -t <tag>`
-- Run Container `sudo docker run -p 1234:1234 -itd --name spd-client <tag>`
+- Run Container `sudo docker run --restart always -p 1234:1234 -itd --name spd-client <tag>`
 
 
 ### Web Server
@@ -28,4 +28,4 @@
 
 - Navigate to `./src/WebServer`
 - Build Image `sudo docker build . -t <tag>`
-- Run Container `sudo docker run -p 3000:3000 -itd --name spd-server <tag>`
+- Run Container `sudo docker run --restart always -p 3000:3000 -itd --name spd-server <tag>`

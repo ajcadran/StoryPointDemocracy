@@ -186,6 +186,7 @@ function broadcastRoomCards() {
 
 function broadcastUsers() {
 	// TODO: Remove all dead users (No data, but still showing in user list)
+	preenDeadUsers();
 	const message = mapToObject(users);
 	clients.forEach((client) => {
 		sendMessage(client, 'UPDATE_USERS', message);
@@ -218,6 +219,7 @@ function updateClientID(prevID, newID) {
 
 // Tools ---------------------------------------------------------------------------------------------------------------
 
+// TODO: Ensure ID does not already exist
 function generateClientID() {
 	return Math.random().toString(36).substr(2, 8);
 }
@@ -255,5 +257,11 @@ function deleteDisconnectedClients() {
 			clients.delete(clientID);
 			users.delete(clientID);
 		}
+	}
+}
+
+function preenDeadUsers() {
+	for (const userID in users.keys()) {
+		if (!users.get(userID).id) users.delete(userID);
 	}
 }

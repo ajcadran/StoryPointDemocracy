@@ -1,5 +1,5 @@
 import React, { createContext, useReducer } from 'react';
-import { Grid, Button } from '@mui/material';
+import { Grid, Button, Typography } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import TopAppBar from './TopAppBar';
 import UserStatusList from './UserStatusList';
@@ -44,33 +44,34 @@ const App = () => {
 		});
 
 	if (state === undefined) return null;
+	//else if (state.establishingConnection) return <Typography>Hello</Typography>;
 
 	else return (
 		<AppContext.Provider value={{ state, dispatch }}>
 			<ThemeProvider theme={theme}>
-				{!state.establishingConnection && [
-					<TopAppBar />,
-					<Grid container spacing={2} sx={{ margin: 'auto', mb: 2, width: '75%', justifyContent: 'center' }}>
-						<Grid item>
+				<TopAppBar />
+				{!state.establishingConnection &&
+					<Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'start', margin: 0, width: '80%', justifyContent: 'center' }}>
+						<Grid item sx={{ mt: '20px' }}>
 							<UserStatusList />
 						</Grid>
-						<Grid item>
+						<Grid item width='25%'>
 							<DisplayRoom />
-						</Grid>
-					</Grid>,
-					<Grid container spacing={2} alignItems="stretch" sx={{ justifyContent: 'center' }}>
-						<Grid item>
-							{state.room.roundState === "play" &&
-								<Button variant="contained" onClick={() => addMessage('END_ROUND', {})}>Show Results</Button>
-							}
-						</Grid>
-						<Grid item>
-							{state.room.roundState === "reveal" &&
-								<Button variant="contained" onClick={() => addMessage('NEW_ROUND', {})}>Reset Room</Button>
-							}
+							<Grid container spacing={2} sx={{ margin: 0, display: 'flex', justifyContent: 'center', width: '200%' }}>
+								<Grid item>
+									{state.room.roundState === "play" &&
+										<Button variant="contained" onClick={() => addMessage('END_ROUND', {})}>Show Results</Button>
+									}
+								</Grid>
+								<Grid item>
+									{state.room.roundState === "reveal" &&
+										<Button variant="contained" onClick={() => addMessage('NEW_ROUND', {})}>Reset Room</Button>
+									}
+								</Grid>
+							</Grid>
 						</Grid>
 					</Grid>
-				]}
+				}
 			</ThemeProvider>
 			<ServerConnectionManager />
 		</AppContext.Provider>
